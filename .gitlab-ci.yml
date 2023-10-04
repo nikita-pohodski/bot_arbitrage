@@ -1,0 +1,52 @@
+default:
+  tags:
+    - develop
+
+stages:
+  - build-back
+  - deploy
+
+.build_back:
+  stage: build-back
+  image: docker:19.03
+  services:
+    - docker:19.03.0-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
+  script:
+    - cd arbitrage-bot-dev/
+    - docker pull $CI_REGISTRY_IMAGE:$CI_ENVIRONMENT_NAME-back || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE -t $CI_REGISTRY_IMAGE:$CI_ENVIRONMENT_NAME-back .
+    - docker push $CI_REGISTRY_IMAGE:$CI_ENVIRONMENT_NAME-back
+  after_script:
+    - docker system prune -f
+
+.deploy:
+  stage: deploy
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker stack deploy -c docker-compose.${CI_ENVIRONMENT_NAME}.yml bot-admin --with-registry-auth
+  after_script:
+    - docker system prune -f
+
+build_back_dev:
+  extends: .build_back
+  environment:
+    name: dev
+  only:
+    - develop
+  tags:
+    - arbitrage-bot-dev
+
+deploy_dev:
+  extends: .deploy
+  environment:
+    name: dev
+  only:
+    - develop
+  tags:
+    - arbitrage-bot-dev

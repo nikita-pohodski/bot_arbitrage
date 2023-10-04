@@ -1,0 +1,17 @@
+networks:
+  arbitrage:
+
+version: '3.9'
+
+services:
+  mmgraph-arbitrage:
+    image: registry.gitlab.com/alium/main-arbitrage-bot:back
+    ports:
+      - 3002:4000
+    networks:
+      - arbitrage
+    environment:
+      PORT: 4000
+      ENV_TYPE: $ENV_TYPE
+      WALLET_PK: $WALLET_PK
+      NODE_KEY: $NODE_KEY
