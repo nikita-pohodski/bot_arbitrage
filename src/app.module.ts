@@ -15,7 +15,7 @@ import { BloXRouteApi } from "./services/BloxrouteApi";
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
-    HttpModule
+    HttpModule,
   ],
   controllers: [],
   providers: [
