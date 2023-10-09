@@ -29,7 +29,7 @@ import { BloXRouteApi } from "./services/BloxrouteApi";
     MulticallContract,
     ArbitragePairsConfig,
     ArbitrageSwapBsc,
-    BloXRouteApi
+    BloXRouteApi,
   ]
 })
 export class AppModule {
